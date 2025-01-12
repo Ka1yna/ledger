@@ -13,22 +13,15 @@ std::string getln(){
   return x;
 }
 
-struct date {
-  int day;
-  int month;
-  int year;
+std::string get_date(){
+  std::time_t t = std::time(0);   // get time now
+  std::tm* now = std::localtime(&t);
+  std::string y = std::to_string(now->tm_year + 1900);
 
-  std::string construct(){
-    std::time_t t = std::time(0);   // get time now
-    std::tm* now = std::localtime(&t);
-
-    day = now->tm_mday, month = now->tm_mon, year = now->tm_year + 1900;
-    return std::string(std::to_string(day) + "/" + std::to_string(month) + "/" + std::to_string(year));
-  }
-};
+  return std::string(std::to_string(now->tm_mday) + "/" + std::to_string(now->tm_mon) + "/" + std::to_string(now->tm_year + 1900));
+}
 
 struct ledger_entry {
-  date date;
   std::string account_from;
   std::string account_to;
   int amount;
@@ -56,8 +49,8 @@ std::pair<std::ofstream, std::ofstream> init (ledger_entry entry){
 
 void write_transaction (ledger_entry entry) {
   std::pair files = init(entry);
-  files.first << std::string("to," + entry.account_to + "," + entry.date.construct() + "," + std::to_string(entry.amount)) << std::endl;
-  files.second << std::string("from," + entry.account_from + "," + entry.date.construct() + "," + std::to_string(entry.amount)) << std::endl; 
+  files.first << std::string("to," + entry.account_to + "," + get_date() + "," + std::to_string(entry.amount)) << std::endl;
+  files.second << std::string("from," + entry.account_from + "," + get_date() + "," + std::to_string(entry.amount)) << std::endl; 
 }
 
 ledger_entry construct_entry(){
@@ -70,11 +63,7 @@ ledger_entry construct_entry(){
   println("Amount: ")
   int amnt = std::stoi(getln());
 
-  date current;
-  current.construct();
-
   return ledger_entry {
-    current,
     sender_name,
     receiver_name,
     amnt,
