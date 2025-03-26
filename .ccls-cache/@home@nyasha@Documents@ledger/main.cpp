@@ -27,7 +27,7 @@ struct ledger_entry {
   int amount;
 };
 
-std::pair<std::ofstream, std::ofstream> init (const ledger_entry &entry){
+std::pair<std::ofstream, std::ofstream> init (ledger_entry entry){
   std::string account_to_ledger = std::string(entry.account_to + ".ledger"),
     account_from_ledger = std::string(entry.account_from + ".ledger");
 
@@ -47,13 +47,13 @@ std::pair<std::ofstream, std::ofstream> init (const ledger_entry &entry){
   return std::make_pair(std::move(from_ledger), std::move(to_ledger));
 }
 
-static void write_transaction (const ledger_entry &entry) {
+void write_transaction (ledger_entry entry) {
   std::pair files = init(entry);
   files.first << std::string("to," + entry.account_to + "," + get_date() + "," + std::to_string(entry.amount)) << std::endl;
   files.second << std::string("from," + entry.account_from + "," + get_date() + "," + std::to_string(entry.amount)) << std::endl;
 }
 
-static ledger_entry construct_entry(){
+ledger_entry construct_entry(){
   println("Sender's Name: ");
   std::string sender_name = getln();
 
